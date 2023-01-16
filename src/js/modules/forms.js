@@ -1,6 +1,7 @@
 import { postData } from "../services/requests";
+import clearFormState from "./clearFormState";
 
-const forms = () => {
+const forms = (state) => {
   const form = document.querySelectorAll("form");
   const inputs = document.querySelectorAll("input");
   const upload = document.querySelectorAll('[name="upload"]');
@@ -25,6 +26,13 @@ const forms = () => {
     });
     upload.forEach((item) => {
       item.previousElementSibling.textContent = "Файл не выбран";
+    });
+  };
+
+  const clearSelect = () => {
+    const allSelect = document.querySelectorAll(".calc_form select");
+    allSelect.forEach((item) => {
+      item.selectedIndex = 0;
     });
   };
 
@@ -62,11 +70,16 @@ const forms = () => {
 
       const formData = new FormData(item);
       let api;
+
+      if (item.closest(".calc")) {
+        for (let key in state) {
+          formData.append(key, state[key]);
+        }
+      }
       item.closest(".popup-design") || item.classList.contains("calc_form")
         ? (api = path.designer)
         : (api = path.question);
 
-      console.log(api);
       postData(api, formData)
         .then((res) => {
           console.log(res);
@@ -78,12 +91,16 @@ const forms = () => {
           textMessage.textContent = message.failure;
         })
         .finally(() => {
+          clearSelect();
           clearInputs();
+          clearFormState(state);
           setTimeout(() => {
             statusMessage.remove();
             item.style.display = "block";
             item.classList.remove("fadeOutUp");
             item.classList.add("fadeInUp");
+            document.querySelector(".calc-price").textContent =
+              "Для расчета нужно выбрать размер картины и материал картины";
           }, 5000);
         });
     });
