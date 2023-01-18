@@ -7,6 +7,7 @@ import showMoreStyles from "./modules/showMoreStyles";
 import calc from "./modules/calc";
 import filter from "./modules/filter";
 import pictureSize from "./modules/pictureSize";
+import accordion from "./modules/accordion";
 
 window.addEventListener("DOMContentLoaded", () => {
   "use strict";
@@ -21,7 +22,6 @@ window.addEventListener("DOMContentLoaded", () => {
     ".main-next-btn"
   );
   sliders(".main-slider-item", "vertical");
-
   forms(modalState);
   mask('[name="phone"]');
   checkTextInputs('[name="name"]');
@@ -35,7 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
     ".calc-price",
     modalState
   );
-
   filter();
   pictureSize(".sizes-block");
+  accordion(".accordion-heading");
 });
