@@ -4413,6 +4413,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_accordion__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/accordion */ "./src/js/modules/accordion.js");
 /* harmony import */ var _modules_burger__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/burger */ "./src/js/modules/burger.js");
 /* harmony import */ var _modules_scrolling__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modules/scrolling */ "./src/js/modules/scrolling.js");
+/* harmony import */ var _modules_drop__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/drop */ "./src/js/modules/drop.js");
+
 
 
 
@@ -4443,6 +4445,7 @@ window.addEventListener("DOMContentLoaded", function () {
   Object(_modules_accordion__WEBPACK_IMPORTED_MODULE_9__["default"])(".accordion-heading");
   Object(_modules_burger__WEBPACK_IMPORTED_MODULE_10__["default"])(".burger-menu", ".burger");
   Object(_modules_scrolling__WEBPACK_IMPORTED_MODULE_11__["default"])(".pageup");
+  Object(_modules_drop__WEBPACK_IMPORTED_MODULE_12__["default"])();
 });
 
 /***/ }),
@@ -4647,6 +4650,111 @@ var clearFormState = function clearFormState(state) {
 
 /***/ }),
 
+/***/ "./src/js/modules/drop.js":
+/*!********************************!*\
+  !*** ./src/js/modules/drop.js ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_es_object_to_string__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.object.to-string */ "./node_modules/core-js/modules/es.object.to-string.js");
+/* harmony import */ var core_js_modules_es_object_to_string__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_to_string__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.promise */ "./node_modules/core-js/modules/es.promise.js");
+/* harmony import */ var core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es.promise.finally */ "./node_modules/core-js/modules/es.promise.finally.js");
+/* harmony import */ var core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _services_dots__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/dots */ "./src/js/services/dots.js");
+/* harmony import */ var _services_requests__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/requests */ "./src/js/services/requests.js");
+/* harmony import */ var _services_clearInputs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/clearInputs */ "./src/js/services/clearInputs.js");
+
+
+
+
+
+
+
+
+var drop = function drop() {
+  // drag *
+  // dragend *
+  // dragenter - объект над dropArea
+  // dragexit *
+  // dragleave - объект перетащили за пределы dropArea
+  // dragover - объект зависает над dropArea
+  //dragstart *
+  // drop - объект отправлен в dropArea
+  // * события которые срабатывают на самом файле
+  var fileInputs = document.querySelectorAll('[name="upload"]');
+  ["dragenter", "dragleave", "dragover", "drop"].forEach(function (eventName) {
+    fileInputs.forEach(function (input) {
+      input.addEventListener(eventName, preventDefaults, false);
+    });
+  });
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function highlight(item) {
+    item.closest(".file_upload").style.border = "5px solid yellow";
+    item.closest(".file_upload").style.backgroundColor = "rgba(0,0,0, .7)";
+  }
+
+  function unhighlight(item) {
+    item.closest(".file_upload").style.border = "none";
+
+    if (item.closest(".calc_form")) {
+      item.closest(".file_upload").style.backgroundColor = "#fff";
+    } else if (item.closest(".main_form")) {
+      item.closest(".file_upload").style.backgroundColor = "#f7e7e6";
+    } else {
+      item.closest(".file_upload").style.backgroundColor = "#ededed";
+    }
+  }
+
+  ["dragenter", "dragover"].forEach(function (eventName) {
+    fileInputs.forEach(function (input) {
+      input.addEventListener(eventName, function () {
+        highlight(input);
+      }, false);
+    });
+  });
+  ["dragleave", "drop"].forEach(function (eventName) {
+    fileInputs.forEach(function (input) {
+      input.addEventListener(eventName, function () {
+        unhighlight(input);
+      }, false);
+    });
+  });
+  fileInputs.forEach(function (input) {
+    input.addEventListener("drop", function (e) {
+      input.files = e.dataTransfer.files;
+      Object(_services_dots__WEBPACK_IMPORTED_MODULE_4__["default"])(input);
+
+      if (input.closest(".main_form")) {
+        var formData = new FormData();
+        formData.append("file", input.files[0]);
+        Object(_services_requests__WEBPACK_IMPORTED_MODULE_5__["postData"])("assets/server.php", formData).then(function (result) {
+          console.log(result);
+        }).catch(function (err) {
+          console.error(err);
+        }).finally(function () {
+          Object(_services_clearInputs__WEBPACK_IMPORTED_MODULE_6__["default"])();
+        });
+      }
+    });
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (drop);
+
+/***/ }),
+
 /***/ "./src/js/modules/filter.js":
 /*!**********************************!*\
   !*** ./src/js/modules/filter.js ***!
@@ -4727,20 +4835,18 @@ var filter = function filter() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var core_js_modules_es_function_name__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.function.name */ "./node_modules/core-js/modules/es.function.name.js");
-/* harmony import */ var core_js_modules_es_function_name__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_function_name__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var core_js_modules_es_object_to_string__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.object.to-string */ "./node_modules/core-js/modules/es.object.to-string.js");
-/* harmony import */ var core_js_modules_es_object_to_string__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_to_string__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es.promise */ "./node_modules/core-js/modules/es.promise.js");
-/* harmony import */ var core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es.promise.finally */ "./node_modules/core-js/modules/es.promise.finally.js");
-/* harmony import */ var core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var core_js_modules_es_string_split__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core-js/modules/es.string.split */ "./node_modules/core-js/modules/es.string.split.js");
-/* harmony import */ var core_js_modules_es_string_split__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_split__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
-/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _services_requests__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/requests */ "./src/js/services/requests.js");
-/* harmony import */ var _clearFormState__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./clearFormState */ "./src/js/modules/clearFormState.js");
+/* harmony import */ var core_js_modules_es_object_to_string__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.object.to-string */ "./node_modules/core-js/modules/es.object.to-string.js");
+/* harmony import */ var core_js_modules_es_object_to_string__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_to_string__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.promise */ "./node_modules/core-js/modules/es.promise.js");
+/* harmony import */ var core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es.promise.finally */ "./node_modules/core-js/modules/es.promise.finally.js");
+/* harmony import */ var core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _services_requests__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/requests */ "./src/js/services/requests.js");
+/* harmony import */ var _clearFormState__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./clearFormState */ "./src/js/modules/clearFormState.js");
+/* harmony import */ var _services_dots__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/dots */ "./src/js/services/dots.js");
+/* harmony import */ var _services_clearInputs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/clearInputs */ "./src/js/services/clearInputs.js");
 
 
 
@@ -4752,7 +4858,6 @@ __webpack_require__.r(__webpack_exports__);
 
 var forms = function forms(state) {
   var form = document.querySelectorAll("form");
-  var inputs = document.querySelectorAll("input");
   var upload = document.querySelectorAll('[name="upload"]');
   var message = {
     loading: "Загрузка...",
@@ -4767,15 +4872,6 @@ var forms = function forms(state) {
     question: "assets/question.php"
   };
 
-  var clearInputs = function clearInputs() {
-    inputs.forEach(function (item) {
-      item.value = "";
-    });
-    upload.forEach(function (item) {
-      item.previousElementSibling.textContent = "Файл не выбран";
-    });
-  };
-
   var clearSelect = function clearSelect() {
     var allSelect = document.querySelectorAll(".calc_form select");
     allSelect.forEach(function (item) {
@@ -4785,11 +4881,7 @@ var forms = function forms(state) {
 
   upload.forEach(function (item) {
     item.addEventListener("input", function () {
-      var dots;
-      var arr = item.files[0].name.split(".");
-      arr[0].length > 6 ? dots = "..." : dots = ".";
-      var name = arr[0].substring(0, 6) + dots + arr[1];
-      item.previousElementSibling.textContent = name;
+      Object(_services_dots__WEBPACK_IMPORTED_MODULE_6__["default"])(item);
     });
   });
   form.forEach(function (item) {
@@ -4819,7 +4911,7 @@ var forms = function forms(state) {
       }
 
       item.closest(".popup-design") || item.classList.contains("calc_form") ? api = path.designer : api = path.question;
-      Object(_services_requests__WEBPACK_IMPORTED_MODULE_6__["postData"])(api, formData).then(function (res) {
+      Object(_services_requests__WEBPACK_IMPORTED_MODULE_4__["postData"])(api, formData).then(function (res) {
         console.log(res);
         statusImg.setAttribute("src", message.ok);
         textMessage.textContent = message.success;
@@ -4828,8 +4920,8 @@ var forms = function forms(state) {
         textMessage.textContent = message.failure;
       }).finally(function () {
         clearSelect();
-        clearInputs();
-        Object(_clearFormState__WEBPACK_IMPORTED_MODULE_7__["default"])(state);
+        Object(_services_clearInputs__WEBPACK_IMPORTED_MODULE_7__["default"])();
+        Object(_clearFormState__WEBPACK_IMPORTED_MODULE_5__["default"])(state);
         setTimeout(function () {
           statusMessage.remove();
           item.style.display = "block";
@@ -5316,6 +5408,62 @@ var sliders = function sliders(slidesSelector, dir, prev, next) {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (sliders);
+
+/***/ }),
+
+/***/ "./src/js/services/clearInputs.js":
+/*!****************************************!*\
+  !*** ./src/js/services/clearInputs.js ***!
+  \****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__);
+
+
+var clearInputs = function clearInputs() {
+  var inputs = document.querySelectorAll("input");
+  var upload = document.querySelectorAll('[name="upload"]');
+  inputs.forEach(function (item) {
+    item.value = "";
+  });
+  upload.forEach(function (item) {
+    item.previousElementSibling.textContent = "Файл не выбран";
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (clearInputs);
+
+/***/ }),
+
+/***/ "./src/js/services/dots.js":
+/*!*********************************!*\
+  !*** ./src/js/services/dots.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_es_function_name__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.function.name */ "./node_modules/core-js/modules/es.function.name.js");
+/* harmony import */ var core_js_modules_es_function_name__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_function_name__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es_string_split__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.string.split */ "./node_modules/core-js/modules/es.string.split.js");
+/* harmony import */ var core_js_modules_es_string_split__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_split__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+var dots = function dots(item) {
+  var dots;
+  var arr = item.files[0].name.split(".");
+  arr[0].length > 6 ? dots = "..." : dots = ".";
+  var name = arr[0].substring(0, 6) + dots + arr[1];
+  item.previousElementSibling.textContent = name;
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (dots);
 
 /***/ }),
 

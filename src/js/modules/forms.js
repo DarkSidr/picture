@@ -1,9 +1,9 @@
 import { postData } from "../services/requests";
 import clearFormState from "./clearFormState";
-
+import dots from "../services/dots";
+import clearInputs from "../services/clearInputs";
 const forms = (state) => {
   const form = document.querySelectorAll("form");
-  const inputs = document.querySelectorAll("input");
   const upload = document.querySelectorAll('[name="upload"]');
 
   const message = {
@@ -20,15 +20,6 @@ const forms = (state) => {
     question: "assets/question.php",
   };
 
-  const clearInputs = () => {
-    inputs.forEach((item) => {
-      item.value = "";
-    });
-    upload.forEach((item) => {
-      item.previousElementSibling.textContent = "Файл не выбран";
-    });
-  };
-
   const clearSelect = () => {
     const allSelect = document.querySelectorAll(".calc_form select");
     allSelect.forEach((item) => {
@@ -38,11 +29,7 @@ const forms = (state) => {
 
   upload.forEach((item) => {
     item.addEventListener("input", () => {
-      let dots;
-      let arr = item.files[0].name.split(".");
-      arr[0].length > 6 ? (dots = "...") : (dots = ".");
-      const name = arr[0].substring(0, 6) + dots + arr[1];
-      item.previousElementSibling.textContent = name;
+      dots(item);
     });
   });
 
